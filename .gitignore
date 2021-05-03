@@ -1,4 +1,5 @@
 hosts
+inventory.ini
 vars.yml
 playbook.retry
 customs/

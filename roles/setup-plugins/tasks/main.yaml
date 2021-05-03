@@ -1,0 +1,33 @@
+---
+- block:
+  - name: Check if hello plugin is installed
+    command: wp plugin is-installed hello
+    args:
+      chdir: '/home/{{ remote_web_user }}/www/{{ item.name }}'
+    register: hello_plugin_installed
+    failed_when: hello_plugin_installed.rc > 1
+    changed_when: false
+    with_items:
+      - "{{ domains }}"
+    when: >
+      (("all" in domains_to_use and "none" in domains_to_skip) or item.name in domains_to_use)
+      and item.name not in domains_to_skip
+
+  - name: Remove useless hello plugin
+    command: wp plugin uninstall hello
+    args:
+      chdir: '/home/{{ remote_web_user }}/www/{{ item.0.name }}'
+    when: >
+      (("all" in domains_to_use and "none" in domains_to_skip) or item.0.name in domains_to_use)
+      and item.0.name not in domains_to_skip
+      and item.1.rc == 0
+    with_together:
+      - "{{ domains }}"
+      - "{{ hello_plugin_installed.results }}"
+
+  - name: Install and enable plugins
+    loop: "{{ domains|subelements('wp.plugins') }}"
+    include_tasks: install_plugin.yaml
+
+  become: true
+  become_user: "{{ remote_web_user }}"

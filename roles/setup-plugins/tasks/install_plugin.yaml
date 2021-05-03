@@ -1,0 +1,17 @@
+---
+- name: Check if plugin is installed
+  command: wp plugin is-installed {{ item.1.name }}
+  args:
+    chdir: '/home/{{ remote_web_user }}/www/{{ item.0.name }}'
+  register: plugin_installed
+  failed_when: plugin_installed.rc > 1
+  changed_when: false
+  when: >
+    (("all" in domains_to_use and "none" in domains_to_skip) or item.0.name in domains_to_use)
+    and item.0.name not in domains_to_skip
+
+- name: Install and enable plugin
+  command: wp plugin install --activate {{ item.1.url }}
+  args:
+    chdir: '/home/{{ remote_web_user }}/www/{{ item.0.name }}'
+  when: plugin_installed.rc != 0

@@ -100,7 +100,8 @@
     args:
       chdir: '/home/{{ remote_web_user }}/www/{{ item.name }}'
     register: wp_installed
-    ignore_errors: true
+    failed_when: wp_installed.rc > 1
+    changed_when: false
     when: >
       (("all" in domains_to_use and "none" in domains_to_skip) or item.name in domains_to_use)
       and item.name not in domains_to_skip
@@ -134,6 +135,14 @@
      - "{{ domains }}"
      - "{{ wp_installed.results }}"
 
+  - name: Reload nginx and php-fpm services
+    command: service nginx reload && service php{{ php_fpm.version }}-fpm reload
+    when: >
+      (item.0.skipped is undefined or not item.1.skipped)
+      and 'Error:' not in item.0.stderr
+      and item.0.rc != 0
+    with_together:
+     - "{{ wp_installed.results }}"
 
   become: true
   become_user: "{{ remote_web_user }}"

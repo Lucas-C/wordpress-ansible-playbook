@@ -52,7 +52,7 @@
 - name: Check if host is registered
   command: le whoami
   register: result
-  ignore_errors: true
+  failed_when: result.rc > 1
   changed_when: false
   when: logentries_set_key is not defined
 

@@ -16,7 +16,7 @@
     - vars.yml
   remote_user: "{{ remote_sudo_user }}"
   become: true
-  ignore_errors: "{{ ansible_check_mode }}"
+  any_errors_fatal: true
   roles:
     -
      role: common
@@ -78,6 +78,12 @@
     -
      role: grunt-buildmachine
      tags: [buildmachine, gruntbm]
+    -
+     role: setup-plugins
+     tags: [setup]
+    -
+     role: setup-theme
+     tags: [setup]
     -
      role: postrun.message
      tags:

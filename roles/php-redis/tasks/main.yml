@@ -1,5 +1,5 @@
 ---
-# install php redis for php7.1
+# install php redis for php
 - name: "Install php-redis for php{{ php_fpm.version }}"
   apt:
     name: 'php{{ php_fpm.version }}-redis'
