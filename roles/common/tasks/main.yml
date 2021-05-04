@@ -10,6 +10,7 @@
   with_items:
   - fail2ban
   - git-core
+  - imagemagick
   - letsencrypt
   - unzip
   - python-pip

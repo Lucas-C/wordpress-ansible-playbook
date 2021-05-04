@@ -135,13 +135,25 @@
      - "{{ domains }}"
      - "{{ wp_installed.results }}"
 
+  - name: Configure file upload max size to 32MB
+    command: wp site option update fileupload_maxk 32768
+    args:
+      chdir: '/home/{{ remote_web_user }}/www/{{ item.0.name }}'
+    when: >
+      (item.1.skipped is undefined or not item.1.skipped)
+      and 'Error:' not in item.1.stderr
+      and item.1.rc != 0
+    with_together:
+     - "{{ domains }}"
+     - "{{ wp_installed.results }}"
+
   - name: Reload nginx and php-fpm services
     command: service nginx reload && service php{{ php_fpm.version }}-fpm reload
     when: >
-      (item.0.skipped is undefined or not item.1.skipped)
-      and 'Error:' not in item.0.stderr
-      and item.0.rc != 0
-    with_together:
+      (item.skipped is undefined or not item.skipped)
+      and 'Error:' not in item.stderr
+      and item.rc != 0
+    with_items:
      - "{{ wp_installed.results }}"
 
   become: true
