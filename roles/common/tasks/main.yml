@@ -10,8 +10,8 @@
   with_items:
   - fail2ban
   - git-core
-  - imagemagick
   - letsencrypt
   - unzip
+  - "php{{ php_fpm.version }}-imagick"
   - python-pip
   - python-dev
