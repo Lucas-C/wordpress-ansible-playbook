@@ -147,6 +147,19 @@
      - "{{ domains }}"
      - "{{ wp_installed.results }}"
 
+  - name: Configure HTTPS already handled by nginx reverse-proxy
+    # cf. https://wordpress.org/support/article/administration-over-ssl/#using-a-reverse-proxy
+    lineinfile:
+      dest: /home/{{ remote_web_user }}/www/{{ item.name }}/wp-config.php
+      insertafter: "BLOG_ID_CURRENT_SITE"
+      line: "$_SERVER['HTTPS']='on';"
+      state: present
+    when: >
+      (("all" in domains_to_use and "none" in domains_to_skip) or item.name in domains_to_use)
+      and item.name not in domains_to_skip
+    with_items:
+      - "{{ domains }}"
+
   - name: Reload nginx and php-fpm services
     command: service nginx reload && service php{{ php_fpm.version }}-fpm reload
     when: >
