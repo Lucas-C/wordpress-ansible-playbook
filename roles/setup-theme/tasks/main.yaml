@@ -24,7 +24,7 @@
       - "{{ domains }}"
 
   - name: Install theme
-    command: wp theme install --activate {{ item.wp.theme_url }}
+    command: wp theme install --activate {{ item.0.wp.theme_url }}
     args:
       chdir: '/home/{{ remote_web_user }}/www/{{ item.0.name }}'
     when: item.1.rc != 0

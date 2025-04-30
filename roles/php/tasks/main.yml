@@ -78,6 +78,11 @@
     state: present
   notify: reload php
 
+- name: Ensure directory /etc/nginx/upstreams exists
+  file:
+    path: /etc/nginx/upstreams
+    state: directory
+
 - name: Create a PHP upstream for NGINX
   copy:
     dest: /etc/nginx/upstreams/php{{ php_fpm.version }}.conf
@@ -88,8 +93,14 @@
   notify: restart nginx
 
 - name: Set the PHP upstream for NGINX
-  replace:
-    path: /etc/nginx/global/php-pool.conf
-    regexp: 'default php([0-9]+\.?)+'
-    replace: "default php{{ php_fpm.version }}"
+  copy:
+    dest: /etc/nginx/global/php-pool.conf
+    content: |
+      # Upstream to abstract backend connection(s) for PHP.
+      # Additional upstreams can be added to /etc/nginx/upstreams/*.conf and then you just
+      # change `default php8.1` to whatever the new upstream is (could be php84 for example).
+      include /etc/nginx/upstreams/*.conf;
+      map '' $upstream {
+          default php{{ php_fpm.version }};
+      }
   notify: restart nginx

@@ -6,7 +6,7 @@
 
 - name: Add Nginx repo
   apt_repository:
-    repo: ppa:nginx/development
+    repo: ppa:ondrej/nginx
 
 - name: Install Nginx
   apt:

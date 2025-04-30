@@ -1,13 +1,4 @@
 ---
-- name: Generate random password for wp db user
-  command: php -r "echo md5(random_bytes(10));"
-  register: db_pass
-  when: >
-    (("all" in domains_to_use and "none" in domains_to_skip) or item.name in domains_to_use)
-    and item.name not in domains_to_skip
-  with_items:
-    - "{{ domains }}"
-
 - name: Create WordPress database
   mysql_db:
     name: '{{ item.wp.db_name }}'
@@ -17,20 +8,6 @@
     and item.name not in domains_to_skip
   with_items:
     - "{{ domains }}"
-
-- name: Create WordPress database user
-  mysql_user:
-    name: '{{ item.0.wp.db_name }}'
-    password: '{{ item.1.stdout }}'
-    priv: "{{ item.0.wp.db_name }}.*:ALL"
-    host: localhost
-    state: present
-    update_password: on_create
-  when: >
-    (item.1.skipped is undefined or not item.1.skipped)
-  with_together:
-    - "{{ domains }}"
-    - "{{ db_pass.results }}"
 
 - block:
   - name: Creates directory for domain web files
@@ -82,6 +59,33 @@
       and item.name not in domains_to_skip
     with_items:
       - "{{ domains }}"
+
+  - name: Generate random password for wp db user
+    command: php -r "echo md5(random_bytes(10));"
+    register: db_pass
+    when: >
+      (("all" in domains_to_use and "none" in domains_to_skip) or item.0.name in domains_to_use)
+      and item.0.name not in domains_to_skip
+      and (item.1.skipped is undefined or not item.1.skipped)
+      and not item.1.stat.exists
+    with_together:
+      - "{{ domains }}"
+      - "{{ wp_configured.results }}"
+
+  - name: Create WordPress database user
+    mysql_user:
+      name: '{{ item.0.wp.db_name }}'
+      password: '{{ item.2.stdout }}'
+      priv: "{{ item.0.wp.db_name }}.*:ALL"
+      host: localhost
+      state: present
+    when: >
+      (item.1.skipped is undefined or not item.1.skipped)
+      and not item.1.stat.exists
+    with_together:
+      - "{{ domains }}"
+      - "{{ wp_configured.results }}"
+      - "{{ db_pass.results }}"
 
   - name: Setup WordPress Config using wp-cli
     command: wp config create --dbname={{ item.0.wp.db_name|quote }} --dbuser={{ item.0.wp.db_name|quote }} --dbpass={{item.2.stdout|quote}}
@@ -143,6 +147,8 @@
       (item.1.skipped is undefined or not item.1.skipped)
       and 'Error:' not in item.1.stderr
       and item.1.rc != 0
+      and item.0.wp.install is defined
+      and item.0.wp.install == 'multisite'
     with_together:
      - "{{ domains }}"
      - "{{ wp_installed.results }}"

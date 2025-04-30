@@ -1,5 +1,6 @@
 ---
 ## installs and sets up Mariadb
+## each time this task is executed, the MariaDB root password will change and be saved to /root/.my.cnf
 - name: Install MariaDB package
   apt: name={{item}} state=latest
   with_items:
@@ -16,9 +17,9 @@
 # localhost needs to be the last item for idempotency
 - name: Update mysql root password for all root accounts
   mysql_user:
-      name: root
-      host: "{{ item }}"
-      password: "{{ mysql_root_password.stdout }}"
+    name: root
+    host: "{{ item }}"
+    password: "{{ mysql_root_password.stdout }}"
   with_items:
     - "{{ ansible_hostname }}"
     - 127.0.0.1

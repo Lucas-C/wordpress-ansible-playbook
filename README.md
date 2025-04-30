@@ -2,7 +2,7 @@
 
 This repository contains an ansible playbook for provisioning a WordPress based server with both a production and staging website, optional ssl certificates (provided free via letsencrypt), PHP 7.3, Mariadb, wp-cli, and nginx.
 
-> Note: currently this is oriented towards a Ubuntu or Debian based box.
+> Note: currently this is oriented towards a Ubuntu (tested with 22.04 Jammy Jellyfish) or Debian based box.
 
 ## Roles
 
