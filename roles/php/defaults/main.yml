@@ -1,2 +1,2 @@
 php_fpm:
-  version: 7.3
+  version: 8.4

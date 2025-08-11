@@ -22,14 +22,6 @@
     state: present
     update_cache: yes
 
-- name: Install PHP mcrypt
-  apt:
-    pkg:
-      - php{{ php_fpm.version }}-mcrypt
-    state: present
-    update_cache: yes
-  when: php_fpm.version < 7.2
-
 - name: Set PHP user
   lineinfile:
     dest: /etc/php/{{ php_fpm.version }}/fpm/pool.d/www.conf

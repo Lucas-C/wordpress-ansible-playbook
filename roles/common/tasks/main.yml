@@ -17,3 +17,5 @@
   - python3-dev
   - unattended-upgrades
   - apt-listchanges
+  # To make UpdraftPlus backups faster:
+  - zip
