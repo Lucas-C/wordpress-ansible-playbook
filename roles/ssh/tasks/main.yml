@@ -1,4 +1,17 @@
 ---
+- name: Change sshd port (ipv4)
+  ansible.builtin.lineinfile:
+    path: /lib/systemd/system/ssh.socket
+    regexp: "^ListenStream=0.0.0.0"
+    line: "ListenStream=0.0.0.0:{{ ssh_port }}"
+  notify: restart ssh.socket
+- name: Change sshd port (ipv6)
+  ansible.builtin.lineinfile:
+    path: /lib/systemd/system/ssh.socket
+    regexp: "^ListenStream=.::."
+    line: "ListenStream=[::]:{{ ssh_port }}"
+  notify: restart ssh.socket
+
 - name: Disable root login
   lineinfile:
     dest: /etc/ssh/sshd_config
@@ -6,11 +19,42 @@
     line: "PermitRootLogin no"
     state: present
   notify: restart ssh
-
 - name: Disable password authentication
   lineinfile:
     dest: /etc/ssh/sshd_config
     regexp: "^#?PasswordAuthentication"
     line: "PasswordAuthentication no"
     state: present
+  notify: restart ssh
+
+# What follows comes from: https://blog.stephane-robert.info/docs/securiser/durcissement/ssh/
+- name: Disable sshd AllowAgentForwarding
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?AllowAgentForwarding"
+    line: "AllowAgentForwarding no"
+  notify: restart ssh
+- name: Disable sshd ClientAliveInterval
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?ClientAliveInterval"
+    line: "ClientAliveInterval 0"
+  notify: restart ssh
+- name: Enable sshd MaxAuthTries
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?MaxAuthTries"
+    line: "MaxAuthTries 3"
+  notify: restart ssh
+- name: Set sshd Protocol
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?Protocol"
+    line: "Protocol 2"
+  notify: restart ssh
+- name: Disable sshd X11Forwarding
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?X11Forwarding"
+    line: "X11Forwarding no"
   notify: restart ssh

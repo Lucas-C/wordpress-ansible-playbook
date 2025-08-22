@@ -1,0 +1,15 @@
+---
+- name: Ensure /var/run/sshd exists
+  # cf. https://askubuntu.com/questions/1109934/ssh-server-stops-working-after-reboot-caused-by-missing-var-run-sshd
+  ansible.builtin.file:
+    path: /var/run/sshd
+    state: directory
+    mode: "755"
+  become: true # root access required
+
+- name: Restart service ssh
+  ansible.builtin.service:
+    name: ssh
+    enabled: true
+    state: restarted
+  become: true # root access required

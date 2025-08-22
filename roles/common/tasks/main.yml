@@ -8,14 +8,12 @@
     state: latest
     update_cache: yes
   with_items:  # Target: Ubuntu 22.04 Jammy Jellyfish
-  - fail2ban
   - git-core
   - letsencrypt
   - unzip
   - "php{{ php_fpm.version }}-imagick"
   - python3-pip
   - python3-dev
-  - unattended-upgrades
   - apt-listchanges
   # To make UpdraftPlus backups faster:
   - zip

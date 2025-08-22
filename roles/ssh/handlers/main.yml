@@ -1,5 +1,9 @@
 ---
 - name: restart ssh
-  service:
-    name: ssh
+  include_tasks: roles/ssh/handlers/restart_ssh.yml
+
+- name: restart ssh.socket
+  ansible.builtin.service:
+    name: ssh.socket
+    enabled: true
     state: restarted

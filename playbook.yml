@@ -12,79 +12,60 @@
     domskip: "{{ skip_domains | default('none') }}"
     domains_to_skip: "{{ domskip.split(',') }}"
     post_run_messages: []
-  vars_files:
-    - vars.yml
   remote_user: "{{ remote_sudo_user }}"
   become: true
   any_errors_fatal: true
   roles:
-    -
-     role: common
-     tags: [init]
-    -
-     role: user
-     tags: [init, user]
-    -
-     role: ssh
-     tags: [init, ssh]
-    -
-     role: nginx
-     tags: [nginx, web]
-    -
-     role: nginxsites
-     tags: [nginx, web, sites]
-    -
-     role: php
-     tags: [init]
-    -
-     role: mariadb
-     tags: [init]
-    -
-     role: wp-cli
-     tags: [init]
-    -
-     role: wordpress
-     tags: [web, wordpress]
-    -
-     role: importdb
-     tags: [web, wordpress, import]
-    -
-     role: letsencrypt
-     tags: [web, ssl]
-    -
-     role: gitdeploy
-     tags: [deploy]
-    -
-     role: logentries
-     tags: [logentries]
-    -
-     role: geerlingguy.nodejs
-     tags: [node]
-    -
-     role: grunt
-     tags: [grunt]
-    -
-     role: geerlingguy.composer
-     tags: [composer]
-    -
-     role: geerlingguy.redis
-     tags: [redis]
-    -
-     role: php-redis
-     tags: [redis]
-    -
-     role: buildmachine.webhook.listener
-     tags: [buildmachine, webhook]
-    -
-     role: grunt-buildmachine
-     tags: [buildmachine, gruntbm]
-    -
-     role: setup-plugins
-     tags: [setup]
-    -
-     role: setup-theme
-     tags: [setup]
-    -
-     role: postrun.message
-     tags:
+    - role: robertdebock.bootstrap
+      tags: [init]
+    - role: robertdebock.fail2ban
+      tags: [init]
+    - role: hifis.toolkit.unattended_upgrades
+      tags: [init]
+    - role: common
+      tags: [init]
+    - role: user
+      tags: [init, user]
+    - role: ssh
+      tags: [init, ssh]
+    - role: nginx
+      tags: [nginx, web]
+    - role: nginxsites
+      tags: [nginx, web, sites]
+    - role: php
+      tags: [init]
+    - role: mariadb
+      tags: [init, mariadb]
+    - role: wp-cli
+      tags: [init]
+    - role: wordpress
+      tags: [web, wordpress]
+    - role: importdb
+      tags: [web, wordpress, import]
+    - role: letsencrypt
+      tags: [web, ssl]
+    - role: gitdeploy
+      tags: [deploy]
+    - role: logentries
+      tags: [logentries]
+    - role: geerlingguy.nodejs
+      tags: [node]
+    - role: grunt
+      tags: [grunt]
+    - role: geerlingguy.composer
+      tags: [composer]
+    - role: geerlingguy.redis
+      tags: [redis]
+    - role: php-redis
+      tags: [redis]
+    - role: buildmachine.webhook.listener
+      tags: [buildmachine, webhook]
+    - role: grunt-buildmachine
+      tags: [buildmachine, gruntbm]
+    - role: setup-plugins
+      tags: [setup]
+    - role: setup-theme
+      tags: [setup]
+    - role: postrun.message
+      tags:
       - always
