@@ -3,6 +3,8 @@
   file:
     name: /home/{{ remote_web_user }}/www/letsencrypt
     state: directory
+    owner: "{{ remote_web_user }}"
+    group: "{{ remote_web_user }}"
 
 - name: force restart of nginx
   service:
