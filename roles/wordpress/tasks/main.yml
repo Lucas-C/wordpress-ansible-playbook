@@ -178,3 +178,18 @@
 
   become: true
   become_user: "{{ remote_web_user }}"
+
+- name: Create wordpress-crontask.sh
+  ansible.builtin.copy:
+    src: wordpress-crontask.sh
+    dest: /home/{{ remote_web_user }}/
+    mode: "700"
+    owner: "{{ remote_web_user }}"
+  become: true # root access required
+- name: Create wordpress cron job
+  ansible.builtin.cron:
+    name: wordpress-crontask-{{ item.name }}
+    user: "{{ remote_web_user }}"
+    job: /home/{{ remote_web_user }}/wordpress-crontask.sh {{ item.name }}
+  with_items:
+    - "{{ domains }}"
