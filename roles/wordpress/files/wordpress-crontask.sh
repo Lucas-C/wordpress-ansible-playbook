@@ -4,8 +4,8 @@ cd $(dirname "${BASH_SOURCE[0]}")/www/$1
 wp cron event run --due-now
 # Update backup.status file:
 STATUS_FILE=wp-content/updraft/backup.status
-if grep -qF 'La sauvegarde a réussi' $(ls -t wp-content/updraft/log.*.txt | head -1); then
+if grep -Eq 'La sauvegarde a réussi|The backup succeeded and is now complete' $(ls -t wp-content/updraft/log.*.txt | head -1); then
     date > $STATUS_FILE
 else
-    rm $STATUS_FILE
+    rm -f $STATUS_FILE
 fi
