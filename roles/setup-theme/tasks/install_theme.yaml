@@ -1,0 +1,14 @@
+---
+- name: Check if theme is installed
+  command: wp theme is-installed {{ domain.wp.theme_name }}
+  args:
+    chdir: '/home/{{ remote_web_user }}/www/{{ domain.name }}'
+  register: theme_installed
+  failed_when: theme_installed.rc > 1
+  changed_when: false
+
+- name: Install theme
+  command: wp theme install --activate {{ domain.wp.theme_url }}
+  args:
+    chdir: '/home/{{ remote_web_user }}/www/{{ domain.name }}'
+  when: theme_installed.rc != 0

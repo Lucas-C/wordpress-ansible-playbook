@@ -26,8 +26,14 @@
       - "{{ hello_plugin_installed.results }}"
 
   - name: Install and enable plugins
-    loop: "{{ domains|subelements('wp.plugins') }}"
-    include_tasks: install_plugin.yaml
+    include_tasks: install_plugins.yaml
+    with_items:
+      - "{{ domains }}"
+    loop_control:
+      loop_var: domain
+    when: >
+      (("all" in domains_to_use and "none" in domains_to_skip) or domain.name in domains_to_use)
+      and domain.name not in domains_to_skip
 
   become: true
   become_user: "{{ remote_web_user }}"

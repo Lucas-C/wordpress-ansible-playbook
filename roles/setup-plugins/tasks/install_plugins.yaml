@@ -1,0 +1,5 @@
+- name: Install and enable domain plugins
+  loop: "{{ domain.wp.plugins }}"
+  loop_control:
+    loop_var: plugin
+  include_tasks: install_plugin.yaml

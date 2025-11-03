@@ -10,27 +10,15 @@
     with_items:
       - "{{ domains }}"
 
-  - name: Check if theme is installed
-    command: wp theme is-installed {{ item.wp.theme_name }}
-    args:
-      chdir: '/home/{{ remote_web_user }}/www/{{ item.name }}'
-    register: theme_installed
-    failed_when: theme_installed.rc > 1
-    changed_when: false
-    when: >
-      (("all" in domains_to_use and "none" in domains_to_skip) or item.name in domains_to_use)
-      and item.name not in domains_to_skip
+  - name: Install themes
+    include_tasks: install_theme.yaml
     with_items:
       - "{{ domains }}"
-
-  - name: Install theme
-    command: wp theme install --activate {{ item.0.wp.theme_url }}
-    args:
-      chdir: '/home/{{ remote_web_user }}/www/{{ item.0.name }}'
-    when: item.1.rc != 0
-    with_together:
-      - "{{ domains }}"
-      - "{{ theme_installed.results }}"
+    loop_control:
+      loop_var: domain
+    when: >
+      (("all" in domains_to_use and "none" in domains_to_skip) or domain.name in domains_to_use)
+      and domain.name not in domains_to_skip
 
   - name: Remove meta block
     lineinfile:
