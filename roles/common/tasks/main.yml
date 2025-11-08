@@ -8,6 +8,7 @@
     state: latest
     update_cache: yes
   with_items:  # Target: Ubuntu 22.04 Jammy Jellyfish
+  - acl
   - git-core
   - letsencrypt
   - unzip

@@ -23,7 +23,7 @@
     - role: hifis.toolkit.unattended_upgrades
       tags: [init]
     - role: common
-      tags: [init]
+      tags: [init, packages]
     - role: user
       tags: [init, user]
     - role: ssh
@@ -63,9 +63,9 @@
     - role: grunt-buildmachine
       tags: [buildmachine, gruntbm]
     - role: setup-plugins
-      tags: [setup]
+      tags: [setup, plugins]
     - role: setup-theme
-      tags: [setup]
+      tags: [setup, theme]
     - role: postrun.message
       tags:
       - always

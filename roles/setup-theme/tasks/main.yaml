@@ -32,5 +32,29 @@
     with_items:
       - "{{ domains }}"
 
+  - name: Install functions.php
+    ansible.builtin.copy:
+      src: "{{ item.wp.functions_php_file }}"
+      dest: /home/{{ remote_web_user }}/www/{{ item.name }}/wp-content/functions.php
+      mode: 0644
+    when: >
+      (("all" in domains_to_use and "none" in domains_to_skip) or item.name in domains_to_use)
+      and item.name not in domains_to_skip
+      and item.wp.functions_php_file is defined
+    with_items:
+      - "{{ domains }}"
+
+  - name: Import functions.php from theme
+    ansible.builtin.lineinfile:
+      path: /home/{{ remote_web_user }}/www/{{ item.name }}/wp-content/themes/{{ item.wp.theme_name }}/functions.php
+      state: present
+      line: "require_once __DIR__ . '/../../functions.php';"
+    when: >
+      (("all" in domains_to_use and "none" in domains_to_skip) or item.name in domains_to_use)
+      and item.name not in domains_to_skip
+      and item.wp.functions_php_file is defined
+    with_items:
+      - "{{ domains }}"
+
   become: true
   become_user: "{{ remote_web_user }}"
