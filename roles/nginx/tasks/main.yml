@@ -54,6 +54,22 @@
     backrefs: yes
     state: present
 
+# Recipe from: https://stackoverflow.com/a/74177242/636849
+- name: /etc/ssl/null. certificates
+  command: openssl req -x509 -newkey rsa:2048 -days 10000 -nodes  -subj '/CN=' -keyout null.key -out null.crt
+  args:
+      chdir: /etc/ssl
+      creates:
+      - /etc/ssl/null.crt
+      - /etc/ssl/null.key
+
+- name: Set default nginx config
+  ansible.builtin.copy:
+    src: default.nginx
+    dest: /etc/nginx/sites-available/default
+    mode: 0644
+  notify: reload nginx
+
 - name: Symlink default catchall
   file:
     src: "/etc/nginx/sites-available/default"

@@ -29,7 +29,7 @@
     - role: ssh
       tags: [init, ssh]
     - role: nginx
-      tags: [nginx, web]
+      tags: [nginx, web, nginx-shared]
     - role: nginxsites
       tags: [nginx, web, sites]
     - role: php

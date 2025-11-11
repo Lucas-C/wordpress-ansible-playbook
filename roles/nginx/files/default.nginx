@@ -1,0 +1,12 @@
+server {
+  listen 80 default_server;
+  listen [::]:80 default_server;
+  listen 443 default_server;
+  listen [::]:443 default_server;
+
+  ssl_certificate /etc/ssl/null.crt;
+  ssl_certificate_key /etc/ssl/null.key;
+
+  server_name "";
+  return 444;
+}
